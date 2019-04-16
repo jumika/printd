@@ -77,7 +77,7 @@ export default class Printd {
    * @param styles Optional styles (css texts or urls) that will add to iframe document.head
    * @param scripts Optional scripts (script texts or urls) that will add to iframe document.body
    * @param callback Optional callback that will be triggered when content is ready to print
-   * @param callback Optional callback to modify the document before the cloned element is added
+   * @param callback Optional callback to modify the document before anything is added
    */
   print (el: HTMLElement, styles?: string[], scripts?: string[], callback?: PrintdCallback, documentCallback?: PrintdDocumentCallback) {
     if (this.isLoading) return
@@ -100,6 +100,10 @@ export default class Printd {
     doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>')
 
     this.addEvents()
+    
+    if (documentCallback) {
+      documentCallback({document: doc})
+    }
 
     // append custom styles
     if (Array.isArray(styles)) {
@@ -113,10 +117,7 @@ export default class Printd {
         }
       })
     }
-
-    if (documentCallback) {
-      documentCallback({doc})
-    }
+    
     // append element copy
     doc.body.appendChild(this.elCopy)
 
