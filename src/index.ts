@@ -47,6 +47,12 @@ export interface PrintdCallbackArgs {
 
 export type PrintdCallback = (args: PrintdCallbackArgs) => void
 
+export interface PrintdDocumentCallbackArgs {
+  document: Document
+}
+
+export type PrintdDocumentCallback = (args: PrintdDocumentCallbackArgs) => void
+
 /** Printd class that prints HTML elements in a blank document */
 export default class Printd {
   private readonly iframe: HTMLIFrameElement
@@ -71,8 +77,9 @@ export default class Printd {
    * @param styles Optional styles (css texts or urls) that will add to iframe document.head
    * @param scripts Optional scripts (script texts or urls) that will add to iframe document.body
    * @param callback Optional callback that will be triggered when content is ready to print
+   * @param callback Optional callback to modify the document before the cloned element is added
    */
-  print (el: HTMLElement, styles?: string[], scripts?: string[], callback?: PrintdCallback) {
+  print (el: HTMLElement, styles?: string[], scripts?: string[], callback?: PrintdCallback, documentCallback?: PrintdDocumentCallback) {
     if (this.isLoading) return
 
     const { contentDocument, contentWindow } = this.iframe
@@ -107,6 +114,9 @@ export default class Printd {
       })
     }
 
+    if (documentCallback) {
+      documentCallback({doc})
+    }
     // append element copy
     doc.body.appendChild(this.elCopy)
 
